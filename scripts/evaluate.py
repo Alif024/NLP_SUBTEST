@@ -131,7 +131,8 @@ def main() -> None:
         ("elongation", None, lambda r: r["normalized_text"] != r["clean_text"], "ยุบคำลากเสียง"),
         ("delivery_days", lambda t: re.search(r"\d+\s*(วัน|days?)\b", t, re.I),
          lambda r: r["delivery_days"] is not None, "ดึงจำนวนวันจัดส่ง"),
-        ("price", lambda t: re.search(r"(฿|rs\.?|₹)\s*\d|\d\s*(บาท|rs\b|rupees)", t, re.I),
+        # ต้องมี \b เหมือน PRICE_PATTERN ไม่งั้นตัวกรองจะนับ "service centers 2" ว่ามีราคา
+        ("price", lambda t: re.search(r"(฿|₹|\brs\.?)\s*\d|\d\s*(บาท|\brs\b|rupees)", t, re.I),
          lambda r: r["price"] is not None, "ดึงราคา"),
         ("html", None, lambda r: r["had_html"], "ตรวจพบ HTML"),
         ("code_switch", None, lambda r: bool(r["aspects"]), "วิเคราะห์ข้อความปนภาษาได้"),
