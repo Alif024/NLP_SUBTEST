@@ -174,7 +174,7 @@ with tab_single:
     text = st.text_area("ข้อความรีวิว", value=default_text, height=130,
                         placeholder="วางข้อความรีวิวที่ต้องการวิเคราะห์...")
 
-    if st.button("วิเคราะห์", type="primary", use_container_width=True):
+    if st.button("วิเคราะห์", type="primary", width="stretch"):
         if not text.strip():
             st.warning("กรุณาใส่ข้อความรีวิวก่อน")
         else:
@@ -275,7 +275,7 @@ with tab_single:
             st.markdown("**5. ติดป้ายชนิดคำ (POS)**")
             st.dataframe(
                 pd.DataFrame(r["pos_tags"], columns=["คำ", "ชนิดคำ"]).T,
-                use_container_width=True,
+                width="stretch",
             )
 
             st.markdown("**6. คำสำคัญที่คัดจาก POS** (เฉพาะคำนาม / คำคุณศัพท์ / คำกริยา)")
@@ -294,7 +294,7 @@ with tab_batch:
         uploaded = st.file_uploader("ไฟล์ CSV", type=["csv"])
     with up2:
         st.write("")
-        use_sample = st.button("📂 ใช้ชุดข้อมูลตัวอย่าง", use_container_width=True)
+        use_sample = st.button("📂 ใช้ชุดข้อมูลตัวอย่าง", width="stretch")
 
     source: pd.DataFrame | None = None
     if uploaded is not None:
@@ -321,7 +321,7 @@ with tab_batch:
         limit = col2.slider("จำนวนรีวิวที่วิเคราะห์", 20, min(len(source), 800),
                             min(len(source), 300), step=20)
 
-        if st.button("เริ่มวิเคราะห์", type="primary", use_container_width=True):
+        if st.button("เริ่มวิเคราะห์", type="primary", width="stretch"):
             subset = source.head(limit)
             ids = (subset["review_id"].astype(str).tolist()
                    if "review_id" in subset.columns
@@ -359,7 +359,7 @@ with tab_batch:
             aspect_df = pd.DataFrame(s["aspect_summary"])
             st.dataframe(
                 aspect_df[["aspect", "mentions", "pos", "neg", "neutral", "pos_pct"]],
-                use_container_width=True, hide_index=True,
+                width="stretch", hide_index=True,
                 column_config={
                     "aspect": "ด้าน",
                     "mentions": st.column_config.NumberColumn("ถูกพูดถึง"),
@@ -382,14 +382,14 @@ with tab_batch:
             st.markdown("#### 👍 คำชมที่พบบ่อย")
             if s["top_pros"]:
                 st.dataframe(pd.DataFrame(s["top_pros"], columns=["คำ", "จำนวน"]),
-                             hide_index=True, use_container_width=True)
+                             hide_index=True, width="stretch")
             else:
                 st.caption("—")
         with p2:
             st.markdown("#### 👎 คำติที่พบบ่อย")
             if s["top_cons"]:
                 st.dataframe(pd.DataFrame(s["top_cons"], columns=["คำ", "จำนวน"]),
-                             hide_index=True, use_container_width=True)
+                             hide_index=True, width="stretch")
             else:
                 st.caption("—")
 
@@ -406,7 +406,7 @@ with tab_batch:
             keywords = tfidf_keywords(token_lists, top_n=15)
             if keywords:
                 st.dataframe(pd.DataFrame(keywords, columns=["คำ", "คะแนน"]),
-                             hide_index=True, use_container_width=True, height=380)
+                             hide_index=True, width="stretch", height=380)
             else:
                 st.caption("ข้อมูลน้อยเกินไป")
         with k2:
@@ -435,7 +435,7 @@ with tab_batch:
                    if f"{v['icon']} {v['label_th']}" == aspect_filter][0]
             view = view[view[f"aspect_{key}"] != ""]
 
-        st.dataframe(view, use_container_width=True, hide_index=True, height=420)
+        st.dataframe(view, width="stretch", hide_index=True, height=420)
         st.caption(f"แสดง {len(view)} จาก {len(table)} รีวิว")
 
         buffer = io.StringIO()
@@ -445,7 +445,7 @@ with tab_batch:
             buffer.getvalue().encode("utf-8-sig"),
             file_name="reviewlens_results.csv",
             mime="text/csv",
-            use_container_width=True,
+            width="stretch",
         )
 
 # ================================================================ แท็บ 3
@@ -510,7 +510,7 @@ spaCy มอง `"6195"` ในประโยค `"the inverter costs Rs. 6195"
             }
             for v in ASPECTS.values()
         ]),
-        use_container_width=True, hide_index=True,
+        width="stretch", hide_index=True,
     )
     st.markdown(
         """
