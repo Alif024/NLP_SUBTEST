@@ -1,0 +1,14 @@
+# Dependency สำหรับรันเว็บแอป (Streamlit Community Cloud อ่านไฟล์นี้)
+# หมายเหตุ: ห้ามใส่ kagglehub ที่นี่ — ใช้เฉพาะตอนเตรียมข้อมูล (ดู requirements-dev.txt)
+# ไฟล์ CSV ถูก commit ลงรีโปแล้ว แอปจึงไม่ต้องดาวน์โหลด dataset ตอนรัน
+
+streamlit>=1.40
+pandas>=2.2
+scikit-learn>=1.5
+pythainlp>=5.0
+
+# spaCy ใช้กับภาษาอังกฤษ (POS + NER)
+# ต้องระบุ URL ของโมเดลตรง ๆ เพราะ Streamlit Cloud รันแค่ pip install -r requirements.txt
+# ไม่ได้รัน `python -m spacy download`
+spacy>=3.8,<3.9
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl

@@ -213,6 +213,22 @@ def to_unified_th() -> pd.DataFrame:
     return df[UNIFIED_COLUMNS]
 
 
+def build_en_vocab(df: pd.DataFrame, min_freq: int = 50) -> pd.Series:
+    """
+    สร้างคลังคำอังกฤษจาก corpus เต็ม 205k แถว
+
+    ใช้แก้ปัญหาเฉพาะของ dataset นี้: เครื่องหมายวรรคตอนถูกลบไปหมด
+    ทำให้คำติดกันตรงรอยต่อประโยค เช่น "productfeel", "acbut", "providedifficult"
+    คำที่ปรากฏบ่อย (>= min_freq) ถือว่าเป็นคำจริง ส่วนคำที่ติดกันจะปรากฏน้อยมาก
+    จึงใช้คลังนี้ตัดคำติดกันแบบอนุรักษ์นิยมได้ (ดู reviewlens/cleansing.py)
+    """
+    words = df["Summary"].str.lower().str.findall(r"[a-z]+").explode()
+    freq = words.value_counts()
+    vocab = freq[(freq >= min_freq) & (freq.index.str.len() >= 2)]
+    print(f"      คลังคำอังกฤษ: {len(vocab):,} คำ (จาก {len(freq):,} คำที่พบทั้งหมด)")
+    return vocab
+
+
 def report(df: pd.DataFrame) -> None:
     print("\n" + "=" * 58)
     print("สรุปชุดข้อมูลทดสอบ")
@@ -236,8 +252,9 @@ def report(df: pd.DataFrame) -> None:
 def main() -> None:
     DATA_DIR.mkdir(exist_ok=True)
 
-    en_raw = sample_stratified(load_and_clean(download_flipkart()))
-    en = to_unified_en(en_raw)
+    full = load_and_clean(download_flipkart())
+    vocab = build_en_vocab(full)
+    en = to_unified_en(sample_stratified(full))
     th = to_unified_th()
 
     print("\n[4/5] เขียนไฟล์")
@@ -253,6 +270,11 @@ def main() -> None:
     combined.to_csv(combined_path, index=False, encoding="utf-8-sig")
     print(f"      {combined_path.relative_to(PROJECT_ROOT)}  ({len(combined)} แถว, "
           f"{combined_path.stat().st_size / 1024:.0f} KB)")
+
+    vocab_path = DATA_DIR / "en_vocab.txt"
+    vocab_path.write_text("\n".join(vocab.index), encoding="utf-8")
+    print(f"      {vocab_path.relative_to(PROJECT_ROOT)}  ({len(vocab)} คำ, "
+          f"{vocab_path.stat().st_size / 1024:.0f} KB)")
 
     print("\n[5/5] ตรวจผล")
     report(combined)
