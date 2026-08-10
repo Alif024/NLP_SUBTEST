@@ -1,0 +1,365 @@
+# -*- coding: utf-8 -*-
+"""
+ชุดรีวิวภาษาไทยที่เขียนขึ้นเอง (hand-crafted) สำหรับทดสอบ ReviewLens TH
+
+เหตุผลที่ต้องมีไฟล์นี้:
+ชุดข้อมูล Flipkart เป็นภาษาอังกฤษล้วน และผ่านการ moderate มาแล้ว
+จึงไม่มีรีวิวสแปมโฆษณา (URL = 0 แถว, เบอร์โทร = 2 แถว จาก 205,052 แถว)
+ทำให้ไม่สามารถทดสอบโมดูล "คัดกรอง" (กลุ่ม D ใน SCHEMA.md) ได้เลย
+ชุดนี้จึงเติมเคสที่ขาด: สแปมโฆษณา, PII, คำลากเสียง, คำพิมพ์ผิด/แสลง,
+รีวิวซ้ำ, รีวิวคุณภาพต่ำ และการปนภาษาไทย-อังกฤษ
+
+แต่ละรายการมี `expected_aspects` กำกับไว้เป็น ground truth
+สำหรับตรวจความถูกต้องของโมดูล Topic Identification
+"""
+
+# หมายเหตุ: sentiment ใช้ค่า positive / negative / neutral / mixed
+# (ค่า "mixed" ไม่มีในชุด Flipkart — เป็นค่าที่เพิ่มเข้ามาสำหรับรีวิวที่มีทั้งชมและติ)
+
+THAI_REVIEWS = [
+    # ---------- รีวิวปกติ: มีทั้งคำชมและคำติ (ตัวหลักสำหรับโชว์ aspect sentiment) ----------
+    {
+        "raw_text": "ตัวสินค้าใช้ดีนะคะ วัสดุแข็งแรงกว่าที่คิดไว้เยอะ แต่ส่งช้ามาก รอ 9 วันกว่าจะได้ ขนส่ง Flash ทำของหายรอบนึงด้วย",
+        "product_name": "กระติกน้ำสเตนเลส Zebra 600 ml",
+        "product_price": "390",
+        "rate": 3,
+        "sentiment_label": "mixed",
+        "case_tags": "normal|mixed|delivery_days|courier",
+        "expected_aspects": "quality:pos|shipping:neg",
+    },
+    {
+        "raw_text": "หูฟัง Soundcore R50i เสียงดีเกินราคา 890 บาท ใส่สบายไม่เจ็บหู แต่กล่องมาบุบนิดหน่อย ห่อมาบางไปหน่อยค่ะ",
+        "product_name": "หูฟังบลูทูธ Soundcore R50i",
+        "product_price": "890",
+        "rate": 4,
+        "sentiment_label": "mixed",
+        "case_tags": "normal|mixed|price|packaging",
+        "expected_aspects": "quality:pos|price_value:pos|packaging:neg",
+    },
+    {
+        "raw_text": "สั่งสีดำแต่ได้สีขาวมา ทักร้านไปไม่ตอบเลยสามวัน ของก็โอเคอยู่นะแต่บริการแย่มาก",
+        "product_name": "เคสมือถือ iPhone 15 Pro",
+        "product_price": "259",
+        "rate": 2,
+        "sentiment_label": "negative",
+        "case_tags": "normal|variant_mismatch|seller_service",
+        "expected_aspects": "as_described:neg|seller_service:neg|quality:pos",
+    },
+    {
+        "raw_text": "ของถึงเชียงใหม่ภายใน 2 วัน เร็วมากกก แพ็คมาแน่นหนาดี บับเบิ้ลหลายชั้น ประทับใจร้านนี้ค่ะ",
+        "product_name": "จานเซรามิก 8 นิ้ว เซต 4 ใบ",
+        "product_price": "450",
+        "rate": 5,
+        "sentiment_label": "positive",
+        "case_tags": "normal|delivery_days|location|packaging|elongation",
+        "expected_aspects": "shipping:pos|packaging:pos|seller_service:pos",
+    },
+    {
+        "raw_text": "ราคานี้ถือว่าคุ้มมาก เนื้อผ้าดีกว่าที่คิด ใส่แล้วไม่ร้อน ซักแล้วไม่ย้วย จะกลับมาซื้อซ้ำแน่นอน",
+        "product_name": "เสื้อยืดคอกลม Cotton 100%",
+        "product_price": "199",
+        "rate": 5,
+        "sentiment_label": "positive",
+        "case_tags": "normal|price",
+        "expected_aspects": "price_value:pos|quality:pos",
+    },
+    {
+        "raw_text": "ไม่ตรงปกเลยค่ะ รูปในเว็บสีสวยกว่านี้เยอะ ของจริงสีซีดมาก แถมไซส์เล็กกว่าที่ระบุไว้",
+        "product_name": "กระเป๋าสะพายข้าง ผ้าแคนวาส",
+        "product_price": "320",
+        "rate": 1,
+        "sentiment_label": "negative",
+        "case_tags": "normal|as_described",
+        "expected_aspects": "as_described:neg",
+    },
+    {
+        "raw_text": "ใช้มา 3 อาทิตย์แล้วยังดีอยู่ ชาร์จไฟเต็มใช้ได้ทั้งวัน แต่สายชาร์จที่แถมมาพังตั้งแต่อาทิตย์แรก",
+        "product_name": "พาวเวอร์แบงค์ Anker 10000mAh",
+        "product_price": "790",
+        "rate": 4,
+        "sentiment_label": "mixed",
+        "case_tags": "normal|mixed",
+        "expected_aspects": "quality:pos",
+    },
+    {
+        "raw_text": "ของปลอมชัดๆ โลโก้เบี้ยว งานตัดเย็บหยาบมาก เทียบกับของแท้ที่มีอยู่คนละเรื่องเลย อย่าซื้อร้านนี้",
+        "product_name": "รองเท้าผ้าใบ Adidas Ultraboost",
+        "product_price": "1290",
+        "rate": 1,
+        "sentiment_label": "negative",
+        "case_tags": "normal|counterfeit",
+        "expected_aspects": "quality:neg|as_described:neg",
+    },
+    {
+        "raw_text": "แม่ค้าตอบไวมาก ถามอะไรตอบหมด แถมของแถมมาให้อีกเยอะ ตัวสินค้าเองก็ใช้งานได้ดีตามคาด",
+        "product_name": "เครื่องปั่นน้ำผลไม้พกพา 380ml",
+        "product_price": "259",
+        "rate": 5,
+        "sentiment_label": "positive",
+        "case_tags": "normal|seller_service",
+        "expected_aspects": "seller_service:pos|quality:pos",
+    },
+    {
+        "raw_text": "แพงไปหน่อยสำหรับคุณภาพเท่านี้ ที่อื่นถูกกว่าตั้ง 200 ของก็พอใช้ได้แต่ไม่คุ้มราคาที่จ่ายไป",
+        "product_name": "โคมไฟตั้งโต๊ะ LED ถนอมสายตา",
+        "product_price": "690",
+        "rate": 2,
+        "sentiment_label": "negative",
+        "case_tags": "normal|price",
+        "expected_aspects": "price_value:neg|quality:neutral",
+    },
+    {
+        "raw_text": "สั่งวันที่ 12 ม.ค. 68 ได้ของวันที่ 14 ถือว่าไว ขนส่ง Kerry ส่งถึงหน้าบ้านเลย ของครบตามที่สั่งค่ะ",
+        "product_name": "ชุดเครื่องเขียน 12 ชิ้น",
+        "product_price": "180",
+        "rate": 5,
+        "sentiment_label": "positive",
+        "case_tags": "normal|date|courier|delivery_days",
+        "expected_aspects": "shipping:pos",
+    },
+    {
+        "raw_text": "กล่องมาบุบยับเละเลยค่ะ ข้างในโชคดีที่ไม่เป็นไร แต่ถ้าเป็นของแตกง่ายคงพังแน่ ฝากปรับปรุงการแพ็คด้วย",
+        "product_name": "หม้อหุงข้าวไฟฟ้า Sharp 1.8L",
+        "product_price": "1150",
+        "rate": 3,
+        "sentiment_label": "mixed",
+        "case_tags": "normal|packaging",
+        "expected_aspects": "packaging:neg|quality:pos",
+    },
+
+    # ---------- สแปมโฆษณา: มี PII + คำโปรโมต (เคสหลักของโมดูลคัดกรอง) ----------
+    {
+        "raw_text": "สนใจสั่งเพิ่มทักไลน์ @deals2024 นะคะ ราคาส่งถูกกว่านี้อีกเยอะ โทร 081-234-5678 ได้เลยค่ะ รับตัวแทนจำหน่ายด้วย",
+        "product_name": "ครีมบำรุงผิวหน้า SPF50",
+        "product_price": "450",
+        "rate": 5,
+        "sentiment_label": "positive",
+        "case_tags": "ad_spam|pii_phone|pii_line|promo_keyword",
+        "expected_aspects": "",
+    },
+    {
+        "raw_text": "ของดีมากค่ะ ใครสนใจสั่งได้ที่ https://shop.example.com/promo ลด 50% วันนี้วันเดียว หรือ inbox มาที่เพจได้เลย",
+        "product_name": "อาหารเสริมคอลลาเจน 30 เม็ด",
+        "product_price": "590",
+        "rate": 5,
+        "sentiment_label": "positive",
+        "case_tags": "ad_spam|pii_url|promo_keyword",
+        "expected_aspects": "",
+    },
+    {
+        "raw_text": "รับสมัครตัวแทนขายทั่วประเทศ ไม่ต้องสต๊อกของ ทักแชทมาที่ line id: goodmoney99 หรือเมล agent@example.co.th",
+        "product_name": "ชุดเซตกาแฟลดน้ำหนัก",
+        "product_price": "890",
+        "rate": 5,
+        "sentiment_label": "neutral",
+        "case_tags": "ad_spam|pii_line|pii_email|promo_keyword",
+        "expected_aspects": "",
+    },
+    {
+        "raw_text": "ร้านเราขายถูกที่สุดในไทย ราคาส่งเริ่มต้น 99 บาท สั่งเลยที่ www.cheapshop-th.com ส่งฟรีทั่วประเทศ",
+        "product_name": "ถุงเท้าข้อสั้น แพ็ค 10 คู่",
+        "product_price": "99",
+        "rate": 5,
+        "sentiment_label": "positive",
+        "case_tags": "ad_spam|pii_url|promo_keyword|price",
+        "expected_aspects": "price_value:pos",
+    },
+
+    # ---------- PII ในรีวิวจริง (ไม่ใช่สแปม — ผู้ซื้อทิ้งเบอร์ตัวเองไว้) ----------
+    {
+        "raw_text": "ของมาไม่ครบค่ะ ขาดไป 1 ชิ้น รบกวนติดต่อกลับที่ 0891112233 ด้วยนะคะ หรือเมล nid.customer@gmail.com",
+        "product_name": "ชุดกล่องเก็บของพลาสติก 3 ใบ",
+        "product_price": "290",
+        "rate": 2,
+        "sentiment_label": "negative",
+        "case_tags": "pii_phone|pii_email|genuine_complaint",
+        "expected_aspects": "shipping:neg|seller_service:neg",
+    },
+    {
+        "raw_text": "สินค้าใช้ดีมากครับ แต่ใบเสร็จส่งผิดที่อยู่ ผมอยู่ 99/1 ซ.ลาดพร้าว 15 กรุงเทพฯ ไม่ใช่ที่ระบุในระบบ",
+        "product_name": "คีย์บอร์ดไร้สาย Logitech K380",
+        "product_price": "1090",
+        "rate": 4,
+        "sentiment_label": "mixed",
+        "case_tags": "pii_address|location|genuine_complaint",
+        "expected_aspects": "quality:pos|seller_service:neg",
+    },
+
+    # ---------- คุณภาพต่ำ / รีวิวสั้นทั่วไป (ทดสอบ is_low_quality) ----------
+    {"raw_text": "ดีค่ะ", "product_name": "ผ้าเช็ดตัวไมโครไฟเบอร์", "product_price": "150", "rate": 5,
+     "sentiment_label": "positive", "case_tags": "low_quality|generic", "expected_aspects": ""},
+    {"raw_text": "โอเค", "product_name": "แก้วเก็บความเย็น 500ml", "product_price": "220", "rate": 4,
+     "sentiment_label": "neutral", "case_tags": "low_quality|generic", "expected_aspects": ""},
+    {"raw_text": "ดีมากครับ", "product_name": "สายชาร์จ USB-C 1 เมตร", "product_price": "89", "rate": 5,
+     "sentiment_label": "positive", "case_tags": "low_quality|generic", "expected_aspects": ""},
+    {"raw_text": "👍👍👍", "product_name": "ที่วางโทรศัพท์ในรถ", "product_price": "129", "rate": 5,
+     "sentiment_label": "positive", "case_tags": "low_quality|emoji_only", "expected_aspects": ""},
+    {"raw_text": "ไม่ดี", "product_name": "ไฟฉาย LED ชาร์จได้", "product_price": "199", "rate": 1,
+     "sentiment_label": "negative", "case_tags": "low_quality|generic", "expected_aspects": ""},
+
+    # ---------- รีวิวซ้ำ (ทดสอบ is_duplicate) — ข้อความเดียวกัน 3 ครั้ง ----------
+    {"raw_text": "สินค้าดีมากค่ะ ส่งไวมาก แนะนำเลยค่ะ", "product_name": "หมอนรองคอเมมโมรี่โฟม", "product_price": "350",
+     "rate": 5, "sentiment_label": "positive", "case_tags": "duplicate|generic", "expected_aspects": "shipping:pos|quality:pos"},
+    {"raw_text": "สินค้าดีมากค่ะ ส่งไวมาก แนะนำเลยค่ะ", "product_name": "หมอนรองคอเมมโมรี่โฟม", "product_price": "350",
+     "rate": 5, "sentiment_label": "positive", "case_tags": "duplicate|generic", "expected_aspects": "shipping:pos|quality:pos"},
+    {"raw_text": "สินค้าดีมากค่ะ ส่งไวมาก แนะนำเลยค่ะ", "product_name": "หมอนรองคอเมมโมรี่โฟม", "product_price": "350",
+     "rate": 5, "sentiment_label": "positive", "case_tags": "duplicate|generic", "expected_aspects": "shipping:pos|quality:pos"},
+    {"raw_text": "ของดีราคาถูก ส่งเร็วทันใจ ประทับใจมากครับ", "product_name": "ที่ชาร์จไร้สาย 15W", "product_price": "420",
+     "rate": 5, "sentiment_label": "positive", "case_tags": "duplicate|generic", "expected_aspects": "price_value:pos|shipping:pos"},
+    {"raw_text": "ของดีราคาถูก ส่งเร็วทันใจ ประทับใจมากครับ", "product_name": "ที่ชาร์จไร้สาย 15W", "product_price": "420",
+     "rate": 5, "sentiment_label": "positive", "case_tags": "duplicate|generic", "expected_aspects": "price_value:pos|shipping:pos"},
+
+    # ---------- คำลากเสียง + คำพิมพ์ผิด/แสลง (ทดสอบ Normalization) ----------
+    {
+        "raw_text": "ส่งไวมากกกกกก ของดีมว๊ากกก คุ้มมมมม ชอบบบบ จะสั่งอีกกกก",
+        "product_name": "สติกเกอร์ตกแต่งโน้ตบุ๊ก",
+        "product_price": "79",
+        "rate": 5,
+        "sentiment_label": "positive",
+        "case_tags": "elongation|slang",
+        "expected_aspects": "shipping:pos|quality:pos|price_value:pos",
+    },
+    {
+        "raw_text": "ของดีคับ ส่งไวคร้าบบบ แต่กล่องบุบนิดนุงคับ ไม่เปงไรร ยังใช้ได้อยู่คับผม",
+        "product_name": "ลำโพงบลูทูธ JBL Go 3",
+        "product_price": "1290",
+        "rate": 4,
+        "sentiment_label": "mixed",
+        "case_tags": "elongation|typo|slang|packaging",
+        "expected_aspects": "quality:pos|shipping:pos|packaging:neg",
+    },
+    {
+        "raw_text": "แย่มากกกกก!!!! ของพังตั้งแต่แกะกล่องงง ร้านไม่รับผิดชอบบบ อย่าซื้อออออ เสียดายตังค์",
+        "product_name": "พัดลมตั้งโต๊ะ USB",
+        "product_price": "290",
+        "rate": 1,
+        "sentiment_label": "negative",
+        "case_tags": "elongation|slang",
+        "expected_aspects": "quality:neg|seller_service:neg",
+    },
+    {
+        "raw_text": "เอาจริงๆนะ คือมันก้อโอเคอ่ะ แต่ราคาเนี่ยแพงไปป่ะ ของแบบนี้ไม่น่าเกิน 200 อ่ะคับ",
+        "product_name": "ที่ตัดเล็บสเตนเลส เซต 5 ชิ้น",
+        "product_price": "350",
+        "rate": 3,
+        "sentiment_label": "mixed",
+        "case_tags": "typo|slang|price",
+        "expected_aspects": "quality:neutral|price_value:neg",
+    },
+
+    # ---------- ไทยปนอังกฤษ (code-switching) ----------
+    {
+        "raw_text": "Build quality ดีมากครับ วัสดุ premium จริง แต่ battery life สั้นกว่าที่ spec บอกไว้เยอะ ใช้ได้แค่ 4 ชม.",
+        "product_name": "หูฟัง TWS Sony WF-C500",
+        "product_price": "1990",
+        "rate": 3,
+        "sentiment_label": "mixed",
+        "case_tags": "code_switch",
+        "expected_aspects": "quality:pos|as_described:neg",
+    },
+    {
+        "raw_text": "Packaging สวยมาก ห่อมา 3 ชั้น seller ตอบไวมาก recommend ร้านนี้เลยครับ delivery 2 วันถึง",
+        "product_name": "นาฬิกาข้อมือ Casio MTP-1302",
+        "product_price": "1450",
+        "rate": 5,
+        "sentiment_label": "positive",
+        "case_tags": "code_switch|packaging|seller_service|delivery_days",
+        "expected_aspects": "packaging:pos|seller_service:pos|shipping:pos",
+    },
+    {
+        "raw_text": "size ไม่ตรงตาม chart เลยครับ สั่ง L มาแต่ใส่แล้วเหมือน M ต้อง return ใหม่ เสียเวลามาก",
+        "product_name": "เสื้อโปโล Slim Fit",
+        "product_price": "590",
+        "rate": 2,
+        "sentiment_label": "negative",
+        "case_tags": "code_switch|variant_mismatch|as_described",
+        "expected_aspects": "as_described:neg|seller_service:neg",
+    },
+    {
+        "raw_text": "value for money สุดๆ ครับ ราคา 690 บาทได้ของระดับนี้ถือว่า worth it มาก จะซื้อเพิ่มอีกตัว",
+        "product_name": "เมาส์ไร้สาย Logitech M170",
+        "product_price": "690",
+        "rate": 5,
+        "sentiment_label": "positive",
+        "case_tags": "code_switch|price",
+        "expected_aspects": "price_value:pos|quality:pos",
+    },
+
+    # ---------- รีวิวยาว หลาย aspect (ตัวโชว์ผลลัพธ์เต็มรูปแบบ) ----------
+    {
+        "raw_text": "สั่งจากร้าน SmartHome Official ราคา 2,390 บาท ส่งด้วย J&T ถึงขอนแก่นใน 4 วัน แพ็คมาดีมากบับเบิ้ลหนา กล่องไม่บุบเลย ตัวเครื่องงานประกอบแน่นหนา ดูดฝุ่นได้ดีกว่าที่คิด เสียงไม่ดังมาก แต่แบตอยู่ได้แค่ 25 นาทีซึ่งน้อยกว่าที่โฆษณาไว้ 40 นาที ร้านตอบแชทช้าไปหน่อยแต่ก็ตอบครบทุกคำถาม รวมๆ พอใจครับ",
+        "product_name": "เครื่องดูดฝุ่นไร้สาย SmartHome V8",
+        "product_price": "2390",
+        "rate": 4,
+        "sentiment_label": "mixed",
+        "case_tags": "long|multi_aspect|price|courier|location|delivery_days|seller_service",
+        "expected_aspects": "shipping:pos|packaging:pos|quality:pos|as_described:neg|seller_service:neutral",
+    },
+    {
+        "raw_text": "ผิดหวังมากค่ะ สั่งไป 1,890 บาท รอ 12 วันกว่าจะได้ของ ขนส่งบอกส่งไม่สำเร็จ 2 ครั้งทั้งที่อยู่บ้านตลอด พอได้ของมากล่องยับมาก ข้างในหน้าจอมีรอยขีดข่วน สีก็ไม่ตรงกับรูปในเว็บ ทักร้านไปตั้งแต่เมื่อวานยังไม่ตอบเลย จะขอคืนเงินก็ไม่รู้ต้องทำยังไง",
+        "product_name": "แท็บเล็ต Lenovo Tab M10",
+        "product_price": "1890",
+        "rate": 1,
+        "sentiment_label": "negative",
+        "case_tags": "long|multi_aspect|price|delivery_days|packaging|seller_service",
+        "expected_aspects": "shipping:neg|packaging:neg|quality:neg|as_described:neg|seller_service:neg",
+    },
+    {
+        "raw_text": "ซื้อมาใช้ที่ร้านกาแฟ ใช้งานหนักวันละ 8 ชั่วโมง ผ่านมา 2 เดือนยังไม่มีปัญหาเลย ทนกว่าตัวเก่าที่ใช้ยี่ห้ออื่นมาก ราคา 3,290 ถือว่าคุ้มสำหรับร้านเล็กๆ ส่งไว 3 วันถึง แพ็คดีมาก แนะนำเลยครับ",
+        "product_name": "เครื่องชงกาแฟ Delonghi EC685",
+        "product_price": "3290",
+        "rate": 5,
+        "sentiment_label": "positive",
+        "case_tags": "long|multi_aspect|price|delivery_days|packaging",
+        "expected_aspects": "quality:pos|price_value:pos|shipping:pos|packaging:pos",
+    },
+
+    # ---------- เคสกลาง ๆ / เป็นกลาง ----------
+    {
+        "raw_text": "ก็ใช้ได้ตามราคานะ ไม่ได้ดีเลิศแต่ก็ไม่ได้แย่ ใช้งานทั่วไปพอไหว",
+        "product_name": "หูฟังมีสาย 3.5mm",
+        "product_price": "120",
+        "rate": 3,
+        "sentiment_label": "neutral",
+        "case_tags": "neutral",
+        "expected_aspects": "quality:neutral|price_value:neutral",
+    },
+    {
+        "raw_text": "ยังไม่ได้แกะใช้เลยค่ะ ซื้อไว้เป็นของขวัญ ดูจากภายนอกเรียบร้อยดี ไว้ใช้แล้วจะมารีวิวอีกที",
+        "product_name": "ชุดของขวัญสบู่หอม",
+        "product_price": "480",
+        "rate": 4,
+        "sentiment_label": "neutral",
+        "case_tags": "neutral|no_usage",
+        "expected_aspects": "packaging:pos",
+    },
+    {
+        "raw_text": "ของถึงแล้วนะคะ ยังไม่ได้ลอง ขอเวลาทดสอบก่อนแล้วจะกลับมาให้ดาว",
+        "product_name": "เครื่องวัดความดันดิจิทัล",
+        "product_price": "1290",
+        "rate": 3,
+        "sentiment_label": "neutral",
+        "case_tags": "neutral|no_usage",
+        "expected_aspects": "",
+    },
+
+    # ---------- เคสพิเศษ: HTML / อีโมจิ / ตัวเลขปน (ทดสอบ Regex cleansing) ----------
+    {
+        "raw_text": "<p>ของดีมากครับ</p><br/>ส่งไว 2 วัน &nbsp;แนะนำเลย 😍😍 5/5 ดาว",
+        "product_name": "ขาตั้งโน้ตบุ๊กอลูมิเนียม",
+        "product_price": "550",
+        "rate": 5,
+        "sentiment_label": "positive",
+        "case_tags": "html|emoji|star_rating|delivery_days",
+        "expected_aspects": "quality:pos|shipping:pos",
+    },
+    {
+        "raw_text": "ให้ 2 ดาวนะ ของมาช้า 15 วัน แต่คุณภาพโอเคอยู่ 🙄 ราคา ฿1,290 ถือว่าแพงไปนิด",
+        "product_name": "กระเป๋าเดินทาง 20 นิ้ว",
+        "product_price": "1290",
+        "rate": 2,
+        "sentiment_label": "mixed",
+        "case_tags": "emoji|star_rating|price|delivery_days",
+        "expected_aspects": "shipping:neg|quality:pos|price_value:neg",
+    },
+]

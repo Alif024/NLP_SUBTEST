@@ -1,0 +1,45 @@
+﻿review_id,lang,source,raw_text,product_name,product_price,rate,sentiment_label,case_tags,expected_aspects
+TH0001,th,handcrafted,ตัวสินค้าใช้ดีนะคะ วัสดุแข็งแรงกว่าที่คิดไว้เยอะ แต่ส่งช้ามาก รอ 9 วันกว่าจะได้ ขนส่ง Flash ทำของหายรอบนึงด้วย,กระติกน้ำสเตนเลส Zebra 600 ml,390,3,mixed,normal|mixed|delivery_days|courier,quality:pos|shipping:neg
+TH0002,th,handcrafted,หูฟัง Soundcore R50i เสียงดีเกินราคา 890 บาท ใส่สบายไม่เจ็บหู แต่กล่องมาบุบนิดหน่อย ห่อมาบางไปหน่อยค่ะ,หูฟังบลูทูธ Soundcore R50i,890,4,mixed,normal|mixed|price|packaging,quality:pos|price_value:pos|packaging:neg
+TH0003,th,handcrafted,สั่งสีดำแต่ได้สีขาวมา ทักร้านไปไม่ตอบเลยสามวัน ของก็โอเคอยู่นะแต่บริการแย่มาก,เคสมือถือ iPhone 15 Pro,259,2,negative,normal|variant_mismatch|seller_service,as_described:neg|seller_service:neg|quality:pos
+TH0004,th,handcrafted,ของถึงเชียงใหม่ภายใน 2 วัน เร็วมากกก แพ็คมาแน่นหนาดี บับเบิ้ลหลายชั้น ประทับใจร้านนี้ค่ะ,จานเซรามิก 8 นิ้ว เซต 4 ใบ,450,5,positive,normal|delivery_days|location|packaging|elongation,shipping:pos|packaging:pos|seller_service:pos
+TH0005,th,handcrafted,ราคานี้ถือว่าคุ้มมาก เนื้อผ้าดีกว่าที่คิด ใส่แล้วไม่ร้อน ซักแล้วไม่ย้วย จะกลับมาซื้อซ้ำแน่นอน,เสื้อยืดคอกลม Cotton 100%,199,5,positive,normal|price,price_value:pos|quality:pos
+TH0006,th,handcrafted,ไม่ตรงปกเลยค่ะ รูปในเว็บสีสวยกว่านี้เยอะ ของจริงสีซีดมาก แถมไซส์เล็กกว่าที่ระบุไว้,กระเป๋าสะพายข้าง ผ้าแคนวาส,320,1,negative,normal|as_described,as_described:neg
+TH0007,th,handcrafted,ใช้มา 3 อาทิตย์แล้วยังดีอยู่ ชาร์จไฟเต็มใช้ได้ทั้งวัน แต่สายชาร์จที่แถมมาพังตั้งแต่อาทิตย์แรก,พาวเวอร์แบงค์ Anker 10000mAh,790,4,mixed,normal|mixed,quality:pos
+TH0008,th,handcrafted,ของปลอมชัดๆ โลโก้เบี้ยว งานตัดเย็บหยาบมาก เทียบกับของแท้ที่มีอยู่คนละเรื่องเลย อย่าซื้อร้านนี้,รองเท้าผ้าใบ Adidas Ultraboost,1290,1,negative,normal|counterfeit,quality:neg|as_described:neg
+TH0009,th,handcrafted,แม่ค้าตอบไวมาก ถามอะไรตอบหมด แถมของแถมมาให้อีกเยอะ ตัวสินค้าเองก็ใช้งานได้ดีตามคาด,เครื่องปั่นน้ำผลไม้พกพา 380ml,259,5,positive,normal|seller_service,seller_service:pos|quality:pos
+TH0010,th,handcrafted,แพงไปหน่อยสำหรับคุณภาพเท่านี้ ที่อื่นถูกกว่าตั้ง 200 ของก็พอใช้ได้แต่ไม่คุ้มราคาที่จ่ายไป,โคมไฟตั้งโต๊ะ LED ถนอมสายตา,690,2,negative,normal|price,price_value:neg|quality:neutral
+TH0011,th,handcrafted,สั่งวันที่ 12 ม.ค. 68 ได้ของวันที่ 14 ถือว่าไว ขนส่ง Kerry ส่งถึงหน้าบ้านเลย ของครบตามที่สั่งค่ะ,ชุดเครื่องเขียน 12 ชิ้น,180,5,positive,normal|date|courier|delivery_days,shipping:pos
+TH0012,th,handcrafted,กล่องมาบุบยับเละเลยค่ะ ข้างในโชคดีที่ไม่เป็นไร แต่ถ้าเป็นของแตกง่ายคงพังแน่ ฝากปรับปรุงการแพ็คด้วย,หม้อหุงข้าวไฟฟ้า Sharp 1.8L,1150,3,mixed,normal|packaging,packaging:neg|quality:pos
+TH0013,th,handcrafted,สนใจสั่งเพิ่มทักไลน์ @deals2024 นะคะ ราคาส่งถูกกว่านี้อีกเยอะ โทร 081-234-5678 ได้เลยค่ะ รับตัวแทนจำหน่ายด้วย,ครีมบำรุงผิวหน้า SPF50,450,5,positive,ad_spam|pii_phone|pii_line|promo_keyword,
+TH0014,th,handcrafted,ของดีมากค่ะ ใครสนใจสั่งได้ที่ https://shop.example.com/promo ลด 50% วันนี้วันเดียว หรือ inbox มาที่เพจได้เลย,อาหารเสริมคอลลาเจน 30 เม็ด,590,5,positive,ad_spam|pii_url|promo_keyword,
+TH0015,th,handcrafted,รับสมัครตัวแทนขายทั่วประเทศ ไม่ต้องสต๊อกของ ทักแชทมาที่ line id: goodmoney99 หรือเมล agent@example.co.th,ชุดเซตกาแฟลดน้ำหนัก,890,5,neutral,ad_spam|pii_line|pii_email|promo_keyword,
+TH0016,th,handcrafted,ร้านเราขายถูกที่สุดในไทย ราคาส่งเริ่มต้น 99 บาท สั่งเลยที่ www.cheapshop-th.com ส่งฟรีทั่วประเทศ,ถุงเท้าข้อสั้น แพ็ค 10 คู่,99,5,positive,ad_spam|pii_url|promo_keyword|price,price_value:pos
+TH0017,th,handcrafted,ของมาไม่ครบค่ะ ขาดไป 1 ชิ้น รบกวนติดต่อกลับที่ 0891112233 ด้วยนะคะ หรือเมล nid.customer@gmail.com,ชุดกล่องเก็บของพลาสติก 3 ใบ,290,2,negative,pii_phone|pii_email|genuine_complaint,shipping:neg|seller_service:neg
+TH0018,th,handcrafted,สินค้าใช้ดีมากครับ แต่ใบเสร็จส่งผิดที่อยู่ ผมอยู่ 99/1 ซ.ลาดพร้าว 15 กรุงเทพฯ ไม่ใช่ที่ระบุในระบบ,คีย์บอร์ดไร้สาย Logitech K380,1090,4,mixed,pii_address|location|genuine_complaint,quality:pos|seller_service:neg
+TH0019,th,handcrafted,ดีค่ะ,ผ้าเช็ดตัวไมโครไฟเบอร์,150,5,positive,low_quality|generic,
+TH0020,th,handcrafted,โอเค,แก้วเก็บความเย็น 500ml,220,4,neutral,low_quality|generic,
+TH0021,th,handcrafted,ดีมากครับ,สายชาร์จ USB-C 1 เมตร,89,5,positive,low_quality|generic,
+TH0022,th,handcrafted,👍👍👍,ที่วางโทรศัพท์ในรถ,129,5,positive,low_quality|emoji_only,
+TH0023,th,handcrafted,ไม่ดี,ไฟฉาย LED ชาร์จได้,199,1,negative,low_quality|generic,
+TH0024,th,handcrafted,สินค้าดีมากค่ะ ส่งไวมาก แนะนำเลยค่ะ,หมอนรองคอเมมโมรี่โฟม,350,5,positive,duplicate|generic,shipping:pos|quality:pos
+TH0025,th,handcrafted,สินค้าดีมากค่ะ ส่งไวมาก แนะนำเลยค่ะ,หมอนรองคอเมมโมรี่โฟม,350,5,positive,duplicate|generic,shipping:pos|quality:pos
+TH0026,th,handcrafted,สินค้าดีมากค่ะ ส่งไวมาก แนะนำเลยค่ะ,หมอนรองคอเมมโมรี่โฟม,350,5,positive,duplicate|generic,shipping:pos|quality:pos
+TH0027,th,handcrafted,ของดีราคาถูก ส่งเร็วทันใจ ประทับใจมากครับ,ที่ชาร์จไร้สาย 15W,420,5,positive,duplicate|generic,price_value:pos|shipping:pos
+TH0028,th,handcrafted,ของดีราคาถูก ส่งเร็วทันใจ ประทับใจมากครับ,ที่ชาร์จไร้สาย 15W,420,5,positive,duplicate|generic,price_value:pos|shipping:pos
+TH0029,th,handcrafted,ส่งไวมากกกกกก ของดีมว๊ากกก คุ้มมมมม ชอบบบบ จะสั่งอีกกกก,สติกเกอร์ตกแต่งโน้ตบุ๊ก,79,5,positive,elongation|slang,shipping:pos|quality:pos|price_value:pos
+TH0030,th,handcrafted,ของดีคับ ส่งไวคร้าบบบ แต่กล่องบุบนิดนุงคับ ไม่เปงไรร ยังใช้ได้อยู่คับผม,ลำโพงบลูทูธ JBL Go 3,1290,4,mixed,elongation|typo|slang|packaging,quality:pos|shipping:pos|packaging:neg
+TH0031,th,handcrafted,แย่มากกกกก!!!! ของพังตั้งแต่แกะกล่องงง ร้านไม่รับผิดชอบบบ อย่าซื้อออออ เสียดายตังค์,พัดลมตั้งโต๊ะ USB,290,1,negative,elongation|slang,quality:neg|seller_service:neg
+TH0032,th,handcrafted,เอาจริงๆนะ คือมันก้อโอเคอ่ะ แต่ราคาเนี่ยแพงไปป่ะ ของแบบนี้ไม่น่าเกิน 200 อ่ะคับ,ที่ตัดเล็บสเตนเลส เซต 5 ชิ้น,350,3,mixed,typo|slang|price,quality:neutral|price_value:neg
+TH0033,th,handcrafted,Build quality ดีมากครับ วัสดุ premium จริง แต่ battery life สั้นกว่าที่ spec บอกไว้เยอะ ใช้ได้แค่ 4 ชม.,หูฟัง TWS Sony WF-C500,1990,3,mixed,code_switch,quality:pos|as_described:neg
+TH0034,th,handcrafted,Packaging สวยมาก ห่อมา 3 ชั้น seller ตอบไวมาก recommend ร้านนี้เลยครับ delivery 2 วันถึง,นาฬิกาข้อมือ Casio MTP-1302,1450,5,positive,code_switch|packaging|seller_service|delivery_days,packaging:pos|seller_service:pos|shipping:pos
+TH0035,th,handcrafted,size ไม่ตรงตาม chart เลยครับ สั่ง L มาแต่ใส่แล้วเหมือน M ต้อง return ใหม่ เสียเวลามาก,เสื้อโปโล Slim Fit,590,2,negative,code_switch|variant_mismatch|as_described,as_described:neg|seller_service:neg
+TH0036,th,handcrafted,value for money สุดๆ ครับ ราคา 690 บาทได้ของระดับนี้ถือว่า worth it มาก จะซื้อเพิ่มอีกตัว,เมาส์ไร้สาย Logitech M170,690,5,positive,code_switch|price,price_value:pos|quality:pos
+TH0037,th,handcrafted,"สั่งจากร้าน SmartHome Official ราคา 2,390 บาท ส่งด้วย J&T ถึงขอนแก่นใน 4 วัน แพ็คมาดีมากบับเบิ้ลหนา กล่องไม่บุบเลย ตัวเครื่องงานประกอบแน่นหนา ดูดฝุ่นได้ดีกว่าที่คิด เสียงไม่ดังมาก แต่แบตอยู่ได้แค่ 25 นาทีซึ่งน้อยกว่าที่โฆษณาไว้ 40 นาที ร้านตอบแชทช้าไปหน่อยแต่ก็ตอบครบทุกคำถาม รวมๆ พอใจครับ",เครื่องดูดฝุ่นไร้สาย SmartHome V8,2390,4,mixed,long|multi_aspect|price|courier|location|delivery_days|seller_service,shipping:pos|packaging:pos|quality:pos|as_described:neg|seller_service:neutral
+TH0038,th,handcrafted,"ผิดหวังมากค่ะ สั่งไป 1,890 บาท รอ 12 วันกว่าจะได้ของ ขนส่งบอกส่งไม่สำเร็จ 2 ครั้งทั้งที่อยู่บ้านตลอด พอได้ของมากล่องยับมาก ข้างในหน้าจอมีรอยขีดข่วน สีก็ไม่ตรงกับรูปในเว็บ ทักร้านไปตั้งแต่เมื่อวานยังไม่ตอบเลย จะขอคืนเงินก็ไม่รู้ต้องทำยังไง",แท็บเล็ต Lenovo Tab M10,1890,1,negative,long|multi_aspect|price|delivery_days|packaging|seller_service,shipping:neg|packaging:neg|quality:neg|as_described:neg|seller_service:neg
+TH0039,th,handcrafted,"ซื้อมาใช้ที่ร้านกาแฟ ใช้งานหนักวันละ 8 ชั่วโมง ผ่านมา 2 เดือนยังไม่มีปัญหาเลย ทนกว่าตัวเก่าที่ใช้ยี่ห้ออื่นมาก ราคา 3,290 ถือว่าคุ้มสำหรับร้านเล็กๆ ส่งไว 3 วันถึง แพ็คดีมาก แนะนำเลยครับ",เครื่องชงกาแฟ Delonghi EC685,3290,5,positive,long|multi_aspect|price|delivery_days|packaging,quality:pos|price_value:pos|shipping:pos|packaging:pos
+TH0040,th,handcrafted,ก็ใช้ได้ตามราคานะ ไม่ได้ดีเลิศแต่ก็ไม่ได้แย่ ใช้งานทั่วไปพอไหว,หูฟังมีสาย 3.5mm,120,3,neutral,neutral,quality:neutral|price_value:neutral
+TH0041,th,handcrafted,ยังไม่ได้แกะใช้เลยค่ะ ซื้อไว้เป็นของขวัญ ดูจากภายนอกเรียบร้อยดี ไว้ใช้แล้วจะมารีวิวอีกที,ชุดของขวัญสบู่หอม,480,4,neutral,neutral|no_usage,packaging:pos
+TH0042,th,handcrafted,ของถึงแล้วนะคะ ยังไม่ได้ลอง ขอเวลาทดสอบก่อนแล้วจะกลับมาให้ดาว,เครื่องวัดความดันดิจิทัล,1290,3,neutral,neutral|no_usage,
+TH0043,th,handcrafted,<p>ของดีมากครับ</p><br/>ส่งไว 2 วัน &nbsp;แนะนำเลย 😍😍 5/5 ดาว,ขาตั้งโน้ตบุ๊กอลูมิเนียม,550,5,positive,html|emoji|star_rating|delivery_days,quality:pos|shipping:pos
+TH0044,th,handcrafted,"ให้ 2 ดาวนะ ของมาช้า 15 วัน แต่คุณภาพโอเคอยู่ 🙄 ราคา ฿1,290 ถือว่าแพงไปนิด",กระเป๋าเดินทาง 20 นิ้ว,1290,2,mixed,emoji|star_rating|price|delivery_days,shipping:neg|quality:pos|price_value:neg

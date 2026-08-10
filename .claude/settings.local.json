@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \"import kagglehub; print\\('kagglehub', kagglehub.__version__\\)\")",
+      "Bash(pip list *)",
+      "Bash(py -0p)",
+      "Bash(python -m venv .venv)",
+      "Bash(./.venv/Scripts/python.exe -m pip install --quiet --upgrade pip)",
+      "Bash(./.venv/Scripts/python.exe -m pip install --quiet kagglehub pandas)",
+      "Bash(./.venv/Scripts/python.exe -c \"import kagglehub, pandas; print\\('kagglehub', kagglehub.__version__\\); print\\('pandas', pandas.__version__\\)\")",
+      "Bash(./.venv/Scripts/python.exe -c ' *)",
+      "Bash(PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -c ' *)"
+    ]
+  }
+}

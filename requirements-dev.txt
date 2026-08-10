@@ -1,0 +1,5 @@
+# Dependency สำหรับเตรียมข้อมูลเท่านั้น (scripts/prepare_data.py)
+# ห้ามใส่ใน requirements.txt เพราะ Streamlit Cloud ไม่ต้องดาวน์โหลด dataset ซ้ำ
+# ไฟล์ CSV ที่ได้ถูก commit ลงรีโปไปแล้ว
+kagglehub>=1.0
+pandas>=2.2
