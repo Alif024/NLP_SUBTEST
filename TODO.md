@@ -51,54 +51,81 @@ code_switch 4 · typo/slang 6 · html/emoji 3
 - Python 3.14.6 + venv ที่ `.venv/`
 - `pythainlp 5.3.5`, `streamlit 1.61`, `spacy 3.8.13`, `scikit-learn 1.9` ติดตั้งได้ทั้งหมด ไม่มีปัญหา wheel
 
-## 2. เทคนิค NLP ที่ต้องใส่ในโค้ด (3 คะแนน)
+## 2. เทคนิค NLP ที่ต้องใส่ในโค้ด (3 คะแนน) — ✅ เสร็จแล้ว
 
-อ้างอิงตาราง mapping ท้าย [SCHEMA.md](SCHEMA.md) — ทุกเทคนิคต้องผูกกับฟิลด์ผลลัพธ์จริง
+ตรรกะทั้งหมดอยู่ในแพ็กเกจ `reviewlens/` แยกจาก UI เพื่อให้ทดสอบได้โดยไม่ต้องเปิดเว็บ
 
-- [ ] **Regex & Cleansing** → `clean_text`, `pii_removed`, `price`, `delivery_days`, `variant`, `star_rating`
-      (ลบเบอร์โทร / LINE ID / URL / อีเมล / อีโมจิ และ **เก็บของที่ลบไว้แสดง** เพื่อใช้เป็นสัญญาณสแปม)
-- [ ] **Tokenization & Normalization** → `tokens`, `tokens_clean`, `normalized_text`
-      (`pythainlp.word_tokenize(engine="newmm")`, ลบ stopwords, ยุบคำลากเสียงด้วย `(.)\1{2,}` → `\1`)
-- [ ] **Topic Identification** → `aspects` (6 ด้าน), `product_type`, `keywords` (TF-IDF), `topic_id` (LDA)
-- [ ] **POS & NER** → `pos_tags`, `brand`, `seller_shop`, `location`, `date_mentioned`
-      และใช้ POS ดึงคำคุณศัพท์มาทำ `pros` / `cons`
-- [ ] **ตัวคัดกรอง (จุดขายของโปรเจกต์)** → `spam_signals`, `is_ad_spam`, `is_low_quality`,
-      `is_duplicate`, `credibility_score`, `review_status`
+- [x] **Regex & Cleansing** → [reviewlens/cleansing.py](reviewlens/cleansing.py)
+      ลบ PII/HTML/อีโมจิ + แยกคำอังกฤษที่ติดกันด้วยคลังคำ 1,866 คำ
+- [x] **Tokenization & Normalization** → [reviewlens/normalize.py](reviewlens/normalize.py)
+      newmm, ยุบคำลากเสียง (ไทย 3+→1, อังกฤษ 3+→2 แล้วเช็คคลังคำ), แก้คำพิมพ์ผิดระดับโทเคน
+- [x] **Topic Identification** → [reviewlens/aspects.py](reviewlens/aspects.py) + [corpus.py](reviewlens/corpus.py)
+      aspect 6 ด้าน (กำหนดเอง) + TF-IDF + LDA (ให้ข้อมูลบอกเอง)
+- [x] **POS & NER** → [reviewlens/extract.py](reviewlens/extract.py)
+      pythainlp + spaCy ใช้ป้าย UD ร่วมกัน, gazetteer แบรนด์/ขนส่ง/จังหวัด
+- [x] **ตัวคัดกรอง** → [reviewlens/screening.py](reviewlens/screening.py)
+      ใช้ PII ที่ลบไปเป็นสัญญาณจับสแปม + ลายนิ้วมือข้อความหารีวิวซ้ำ
+- [x] **สคริปต์ประเมินผล** → [scripts/evaluate.py](scripts/evaluate.py)
 
-## 3. โครงสร้างไฟล์ใน Repo (บังคับ)
+### ผลการประเมิน (544 รีวิว, 23 ms/รีวิว)
 
-- [ ] `app.py` — ไฟล์หลักของ Streamlit App
-- [ ] `requirements.txt` — runtime เท่านั้น: `streamlit`, `pythainlp`, `spacy`, `pandas`, `scikit-learn`
-      (⚠️ **ห้ามใส่ `kagglehub`** — อยู่ใน `requirements-dev.txt` แล้ว)
+| ตัวชี้วัด | ค่า |
+|---|---|
+| Aspect precision / recall / F1 | 84.2% / 80.0% / **82.1%** |
+| ความถูกต้องของขั้ว | **85.9%** (55/64) |
+| จับโฆษณาแฝง / รีวิวซ้ำ / ลบ PII | 4/4 · 3/3 · 2/2 ทุกประเภท |
+| ยุบคำลากเสียง / ดึงราคา / ดึงวันจัดส่ง | 47/47 · 37/37 · 55/56 |
+
+### บั๊กที่เจอและแก้ระหว่างทาง (บันทึกไว้อธิบายในรายงานได้)
+
+1. `TYPO_MAP` แทนที่แบบ substring → `"ไม่เป็นไร"` กลายเป็น `"ไม่เป็นอะไร"` — แก้เป็นระดับโทเคน
+2. ค้นคำไทยแบบ substring → `"ทน"` แมตช์ใน `"ตัวแทน"`, `"เลย"` เป็นจังหวัด — บังคับให้เริ่มที่ขอบเขตคำ
+3. ขอบเขตคำปฏิเสธวัดด้วยระยะตัวอักษร → `"ยังไม่มีปัญหาเลย ทนกว่า"` พลิกขั้ว `"ทน"` ผิด
+   — เปลี่ยนเป็นวัดจำนวนคำที่คั่นกลาง (ขั้วถูกขึ้น 82.8% → 85.9%)
+4. คำชมกลาง ๆ ถูกผูกกับ aspect คุณภาพ → `"ประทับใจร้านนี้"` นับผิดด้าน — ย้ายไป lexicon กลาง
+5. regex ราคา `rs` ไม่มีขอบเขตคำ → `"service centers 2"` กลายเป็นราคา 2 บาท
+
+## 3. โครงสร้างไฟล์ใน Repo (บังคับ) — ✅ เสร็จแล้ว
+
+- [x] `app.py` — Streamlit App 3 แท็บ (รีวิวเดี่ยว / หลายรีวิว / วิธีทำงานของระบบ)
+- [x] `requirements.txt` — runtime เท่านั้น + URL โมเดล spaCy (ไม่มี `kagglehub`)
+- [x] `.streamlit/config.toml` — ธีมและ `maxUploadSize`
+- [x] `reviewlens/` — แพ็กเกจตรรกะ NLP 9 ไฟล์
 - [x] `requirements-dev.txt` — `kagglehub`, `pandas` สำหรับเตรียมข้อมูล
 - [x] `.gitignore` — `.venv/`, `__pycache__/`, `ref/`
 - [x] `scripts/` — `prepare_data.py`, `thai_seed.py`
 - [x] `data/` — ไฟล์ข้อมูลทดสอบ 3 ไฟล์
-- [ ] `README.md` — ต้องมี 3 ส่วน:
-  - [ ] วิธีใช้งาน (รันในเครื่อง + ลิงก์เว็บ)
-  - [ ] แนวคิดของ Domain ที่เลือก + ฟิลด์ที่สกัด
-  - [ ] **ตัวอย่าง Prompt ที่ใช้สั่ง AI** ตอนเขียนโปรแกรม
-- [ ] ไฟล์ข้อมูลทดสอบ (จากข้อ 1)
+- [x] `README.md` — ครบทั้ง 3 ส่วนที่โจทย์บังคับ:
+  - [x] วิธีใช้งาน (ทีละแท็บ + รันในเครื่อง + ขั้นตอน deploy)
+  - [x] แนวคิดของ Domain + ตารางฟิลด์ที่สกัดครบทั้ง 4 กลุ่ม
+  - [x] **ตัวอย่าง Prompt ที่ใช้สั่ง AI** 5 ตัวอย่าง + บทเรียนที่ได้
+- [x] ไฟล์ข้อมูลทดสอบ (จากข้อ 1)
+- [ ] ⚠️ **เติม URL เว็บและ GitHub ในหัว README.md หลัง deploy เสร็จ**
 
-## 4. หน้าเว็บใช้งานง่าย (1 คะแนน)
+## 4. หน้าเว็บใช้งานง่าย (1 คะแนน) — ✅ เสร็จแล้ว
 
 **แท็บ 1 — วิเคราะห์รีวิวเดี่ยว**
-- [ ] `st.text_area` + ปุ่มประมวลผล + ปุ่ม "ใช้ตัวอย่าง" (ให้อาจารย์กดทดสอบได้ทันที)
-- [ ] แสดงป้ายสถานะเด่น ๆ: `review_status` (ผ่าน / น่าสงสัย / สแปม) + `credibility_score`
-- [ ] แสดง entity ที่สกัดได้เป็นการ์ด (แบรนด์ / ร้าน / ราคา / วันจัดส่ง / สี-ไซส์)
-- [ ] แสดง aspect sentiment เป็นแถว 6 ด้าน พร้อมสีบวก-ลบ + `pros` / `cons`
-- [ ] มี expander "ดูขั้นตอนการประมวลผล" โชว์ raw → clean → normalized → tokens → POS
-      (สำคัญ: ทำให้เห็นว่าใช้เทคนิคจริง ไม่ใช่เรียก API)
+- [x] `st.text_area` + ปุ่มวิเคราะห์ + dropdown ตัวอย่าง 6 แบบ (กดทดสอบได้ทันที)
+- [x] แถบสถานะ + คะแนนความน่าเชื่อถือ + progress bar
+- [x] **เหตุผลที่หักคะแนนทุกข้อ** พร้อมจำนวนคะแนน
+- [x] entity เป็นการ์ด (ราคา / วันจัดส่ง / หมวด / ดาว / แบรนด์ / ร้าน / ขนส่ง / สถานที่ / สี-ไซส์)
+- [x] aspect 6 ด้านพร้อมสี + **คำที่ใช้ตัดสิน** (ตรวจสอบย้อนกลับได้) + pros/cons
+- [x] expander โชว์ raw → clean → normalized → tokens → POS → keywords
 
 **แท็บ 2 — วิเคราะห์หลายรีวิว**
-- [ ] `st.file_uploader` รับ CSV + ปุ่มโหลดไฟล์ตัวอย่างในรีโป
-- [ ] ตารางผลลัพธ์ + ตัวกรองตาม `review_status` / aspect
-- [ ] กราฟแท่ง aspect sentiment, top pros/cons, ค่าเฉลี่ยวันจัดส่ง
-- [ ] ปุ่มดาวน์โหลดผลเป็น CSV
+- [x] `st.file_uploader` + ปุ่มใช้ชุดข้อมูลตัวอย่าง + เลือกคอลัมน์/จำนวนได้
+- [x] การ์ดสรุป + ตารางราย aspect (ProgressColumn) + กราฟแท่งชม/กลาง/ติ
+- [x] คำชม/คำติที่พบบ่อย + TF-IDF + LDA (ปรับจำนวนหัวข้อได้)
+- [x] ตารางผลลัพธ์ กรองตามสถานะและ aspect + ปุ่มดาวน์โหลด CSV
+
+**แท็บ 3 — วิธีทำงานของระบบ** (เพิ่มเอง)
+- [x] แผนภาพ pipeline + เหตุผลเบื้องหลังการออกแบบ + ตารางคำของ aspect
 
 **ทั่วไป**
-- [ ] `@st.cache_resource` สำหรับโหลดโมเดล/พจนานุกรม (ไม่งั้นแอปช้ามาก)
-- [ ] จัดการ error: ข้อความว่าง, CSV ไม่มีคอลัมน์ที่ต้องการ, ไฟล์ใหญ่เกิน
+- [x] `@st.cache_resource` warm-up โมเดล, `@st.cache_data` แคชผล batch
+- [x] จัดการ error: ข้อความว่าง, อ่าน CSV ไม่ได้, จำกัดขนาดอัปโหลด 10 MB
+- [x] **ทดสอบด้วย `streamlit.testing.v1.AppTest`** กดปุ่มจริงทุกปุ่ม ไม่มี exception
+- [x] เปลี่ยน `use_container_width` → `width="stretch"` (ตัวเก่าถูกกำหนดถอดหลัง 2025-12-31)
 
 ## 5. Deploy (2 คะแนน)
 
